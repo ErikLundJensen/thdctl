@@ -109,7 +109,7 @@ func DetermineServerStatus(client robot.ClientInterface, sshClient hetznerapi.SS
 		return TalosAPIAvailable
 	}
 	if talosError != nil {
-		logrus.WithError(talosError).Error("Talos API not available")
+		logrus.WithError(talosError).Warn("Talos API not available")
 	}
 	// Or waiting for Talos API to become available
 	// We don't have access to the boot log (require KVM console and a human request towards Hetzner)

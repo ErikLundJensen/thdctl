@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	"strings"
+
 	v1alpha1 "github.com/eriklundjensen/thdctl/pkg/api/server/v1alpha"
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
@@ -147,7 +149,11 @@ func (sm *StateMachine) checkSSH() ServerStatus {
 		sm.retries = 0
 		return SSHAvailable
 	} else {
-		logrus.WithError(err).Error("SSH not available")
+		if strings.Contains(err.Error(), "i/o timeout") {
+			logrus.WithError(err).Warn("Warning: i/o timeout while establishing SSH session")
+		} else {
+			logrus.WithError(err).Error("SSH not available")
+		}
 	}
 	// Reboot if SSH is not available after several retries
 	if rescue.Rescue.Active && sm.retries >= sm.maxRetries-1 {
@@ -171,7 +177,7 @@ func (sm *StateMachine) checkTalosAPI() ServerStatus {
 		return TalosAPIAvailable
 	}
 	if talosError != nil {
-		logrus.WithError(talosError).Error("Talos API not available")
+		logrus.WithError(talosError).Warn("Talos API not available")
 	}
 	return sm.state
 }
