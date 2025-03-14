@@ -2,22 +2,28 @@
 
 ## Overview
 
-`thdctl` is a command-line tool to manage Hetzner dedicated servers with Talos. It provides various commands to initialize, configure, and manage your servers.
+`thdctl` is a command-line tool to install Sidero Labs Talos at Hetzner Dedicated servers.
 
-## Docker based
-
-To build and run`thdctl` use the provided Dockerfile:
-
-```sh
-make docker-build
-
-docker run --rm -v $(pwd):/root thdctl:latest /app/thdctl --help
-```
-
-## Build and run without Docker
+## Build and run
 
 ```sh
 make build
+```
+
+Run the CLI to get commands and arguments.
+```
+./thdctl --help
+```
+
+
+## Docker based
+
+```sh
+make docker-build
+```
+
+```
+docker run --rm -v $(pwd):/root thdctl:latest /app/thdctl --help
 ```
 
 ## Usage
@@ -34,8 +40,8 @@ There are two ways of installing Talos using this CLI:
 * init
 * reconcile
 
-The init command install Talos at a clean server.  
-The reconcile command uses a server specification and reconcile the given specification.  
+The `init` command install Talos at a clean server.  
+The `reconcile` command uses a server specification and reconcile the given specification. 
 
 The later command is intended for a crossplane provider, however, it can be used from command line as well.  
 
@@ -55,7 +61,7 @@ Example:
 thdctl init 123456
 ```
 
-### `reconsile`
+#### `reconcile`
 
 Example using the reconcile command: 
 
@@ -64,13 +70,28 @@ thdctl reconcile -f talos/serverSpec.yaml
 ```
 
 
-### Flags & Defaults
+#### Flags & Defaults
 
-- `--help`: Show help information for `thdctl` commands.
-- `--version`: Show the version of `thdctl`.
+```sh
+Usage:
+  thdctl [command]
 
-The environment variable "HETZNET_SSH_PASSWORD" can be used if Hetzner Rescue API no longer returns the password. For example, when activating the rescue mode then the password is only available until the server reboots.
+Available Commands:
+  completion        Generate the autocompletion script for the specified shell
+  getServer         Get server details
+  help              Help about any command
+  init              Initialize the application
+  listFirewallRules List all firewall rules for a server
+  listServers       List all servers
+  reconcile         Reconcile server configuration from file
 
+Flags:
+      --debug        enable debug logging
+  -h, --help         help for thdctl
+      --log string   set log format (txt|json) (default "txt")
+```
+
+The environment variable "HETZNET_SSH_PASSWORD" can be used if Hetzner Rescue API no longer returns the password. For example, when activating the rescue mode then the password is only available until the server reboots. If the CLI stops while the server is rebooting then the password must be set as environment variable.
 
 ## Example Workflow
 
@@ -80,7 +101,7 @@ The environment variable "HETZNET_SSH_PASSWORD" can be used if Hetzner Rescue AP
     thdctl init 123456
     ```
 
-The remaning steps is regular Talos initialization. Below is just an overall description.  
+The remaning steps are regular Talos initialization.  
 
 2. Wait for the API server to be ready, then apply the configuration:
 
