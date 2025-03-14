@@ -8,6 +8,7 @@ import (
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
 	"github.com/eriklundjensen/thdctl/pkg/validation"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +31,7 @@ var initCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		serverNumber, err := strconv.Atoi(args[0])
 		if err != nil {
-			fmt.Printf("Error parsing server number: %v\n", err)
+			logrus.WithError(err).Error("Error parsing server number")
 			return err
 		}
 		sshClient := &hetznerapi.SSHClient{}
@@ -57,14 +58,14 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 
 	rescue, err := hetznerapi.GetRescueSystemDetails(client, serverNumber)
 	if err != nil {
-		fmt.Printf("Error getting rescue system status: %v\n", err)
+		logrus.WithError(err).Error("Error getting rescue system status")
 		return err
 	}
 
 	if !rescue.Rescue.Active || f.enableRescueSystem {
 		rescue, err = hetznerapi.EnableRescueSystem(client, serverNumber)
 		if err != nil {
-			fmt.Printf("Error enabling rescue system: %v\n", err)
+			logrus.WithError(err).Error("Error enabling rescue system")
 			return err
 		}
 	}
@@ -73,7 +74,7 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 		err = hetznerapi.RebootServer(client, serverNumber)
 	}
 	if err != nil || rescue == nil {
-		fmt.Printf("Rescue system state is not available: %v\n", err)
+		logrus.WithError(err).Error("Rescue system state is not available")
 		return err
 	}
 	sshClient.SetTargetHost(rescue.Rescue.ServerIP, "22")
@@ -85,12 +86,12 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 	sshClient.Auth(sshUser, sshPassword)
 
 	sshClient.WaitForReboot()
-	fmt.Printf("Server rebooted in rescue system mode\n")
+	logrus.Info("Server rebooted in rescue system mode")
 
 	version := defaultTalosVersion
 	if f.version != "" {
 		if f.image != "" {
-			fmt.Println("Warning: Both version and image flags are set. Using image flag.")
+			logrus.Warn("Warning: Both version and image flags are set. Using image flag.")
 		}
 		version = f.version
 	}
@@ -101,13 +102,19 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 
 	output, sshErr := sshClient.DownloadImage(imageUrl)
 	if sshErr != nil {
-		fmt.Printf("Failed to download image: %v, output %s\n", sshErr, output)
+		logrus.WithFields(logrus.Fields{
+			"error":  sshErr,
+			"output": output,
+		}).Error("Failed to download image")
 		return sshErr
 	}
 
 	output, sshErr = sshClient.InstallImage(f.disk)
 	if sshErr != nil {
-		fmt.Printf("Failed to install image: %v output %s\n", sshErr, output)
+		logrus.WithFields(logrus.Fields{
+			"error":  sshErr,
+			"output": output,
+		}).Error("Failed to install image")
 		_, sshErr = sshClient.ListDisks()
 		return sshErr
 	}

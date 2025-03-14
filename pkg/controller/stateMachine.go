@@ -8,6 +8,7 @@ import (
 	v1alpha1 "github.com/eriklundjensen/thdctl/pkg/api/server/v1alpha"
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/sirupsen/logrus"
 )
 
 // StateMachine represents the state machine for server states
@@ -36,7 +37,7 @@ func (sm *StateMachine) StateChange(state ServerStatus) {
 	if sm.state == state {
 		return
 	}
-	fmt.Printf("State change from: %s to %s\n", sm.state, state)
+	logrus.Infof("State change from: %s to %s", sm.state, state)
 	sm.state = state
 }
 
@@ -69,7 +70,7 @@ func (sm *StateMachine) Run() error {
 		case TalosImageInstalled:
 			sm.StateChange(sm.checkTalosAPI())
 		case TalosAPIAvailable:
-			fmt.Println("Talos API is available")
+			logrus.Info("Talos API is available")
 			return nil
 		case ServerNotFound, MissingServerNumber, RobotAPIUnavailable:
 			return fmt.Errorf("failed to reach a valid state: %s", sm.state)
@@ -94,7 +95,7 @@ func (sm *StateMachine) initialize() ServerStatus {
 	}
 	rescue, err := hetznerapi.EnableRescueSystem(sm.client, sm.server.ServerNumber)
 	if err != nil || rescue == nil {
-		fmt.Printf("Rescue system state is not available: %v\n", err)
+		logrus.WithError(err).Error("Rescue system state is not available")
 		return Uninitialized
 	}
 	sm.retries = 0
@@ -108,7 +109,7 @@ func (sm *StateMachine) checkRescueMode() ServerStatus {
 		if err.StatusCode == 404 {
 			return ServerNotFound
 		}
-		fmt.Printf("Error getting rescue system status: %v\n", err)
+		logrus.WithError(err).Error("Error getting rescue system status")
 		return RobotAPIUnavailable
 	}
 
@@ -122,7 +123,7 @@ func (sm *StateMachine) checkRescueMode() ServerStatus {
 func (sm *StateMachine) checkSSH() ServerStatus {
 	rescue, err := hetznerapi.GetRescueSystemDetails(sm.client, sm.server.ServerNumber)
 	if err != nil {
-		fmt.Printf("Error getting rescue system status: %v\n", err)
+		logrus.WithError(err).Error("Error getting rescue system status")
 		return RobotAPIUnavailable
 	}
 
@@ -146,7 +147,7 @@ func (sm *StateMachine) checkSSH() ServerStatus {
 		sm.retries = 0
 		return SSHAvailable
 	} else {
-		fmt.Printf("SSH not available: %v\n", err)
+		logrus.WithError(err).Error("SSH not available")
 	}
 	// Reboot if SSH is not available after several retries
 	if rescue.Rescue.Active && sm.retries >= sm.maxRetries-1 {
@@ -159,7 +160,7 @@ func (sm *StateMachine) checkSSH() ServerStatus {
 func (sm *StateMachine) checkTalosAPI() ServerStatus {
 	rescue, err := hetznerapi.GetRescueSystemDetails(sm.client, sm.server.ServerNumber)
 	if err != nil {
-		fmt.Printf("Error getting rescue system status: %v\n", err)
+		logrus.WithError(err).Error("Error getting rescue system status")
 		return RobotAPIUnavailable
 	}
 
@@ -170,7 +171,7 @@ func (sm *StateMachine) checkTalosAPI() ServerStatus {
 		return TalosAPIAvailable
 	}
 	if talosError != nil {
-		fmt.Printf("Talos API not available: %v\n", talosError)
+		logrus.WithError(talosError).Error("Talos API not available")
 	}
 	return sm.state
 }
@@ -180,7 +181,7 @@ func installImage(sm *StateMachine) ServerStatus {
 	image := sm.server.TalosImage
 
 	if version != "" && image != "" {
-		fmt.Println("Warning: Both version and image are set. Using image definition.")
+		logrus.Warn("Warning: Both version and image are set. Using image definition.")
 		version = ""
 	}
 	if image == "" {
@@ -189,15 +190,24 @@ func installImage(sm *StateMachine) ServerStatus {
 
 	output, sshErr := sm.sshClient.DownloadImage(image)
 	if sshErr != nil {
-		fmt.Printf("Failed to download image: %v, output %s\n", sshErr, output)
+		logrus.WithFields(logrus.Fields{
+			"error":  sshErr,
+			"output": output,
+		}).Error("Failed to download image")
 		return SSHAvailable
 	}
 
 	output, sshErr = sm.sshClient.InstallImage(sm.server.Disk)
 	if sshErr != nil {
-		fmt.Printf("Failed to install image: %v output %s\n", sshErr, output)
+		logrus.WithFields(logrus.Fields{
+			"error":  sshErr,
+			"output": output,
+		}).Error("Failed to install image")
 		output, sshErr = sm.sshClient.ListDisks()
-		fmt.Printf("Failed list disks: %v output %s\n", sshErr, output)
+		logrus.WithFields(logrus.Fields{
+			"error":  sshErr,
+			"output": output,
+		}).Error("Failed list disks")
 		return SSHAvailable
 	}
 

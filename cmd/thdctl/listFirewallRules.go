@@ -1,11 +1,11 @@
 package thdctl
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +15,7 @@ var listFirewallRulesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		serverNumber, err := strconv.Atoi(args[0])
 		if err != nil {
-			fmt.Printf("Error parsing server number: %v\n", err)
+			logrus.WithError(err).Error("Error parsing server number")
 			return
 		}
 
@@ -30,16 +30,26 @@ func init() {
 func listFirewallRules(client robot.Client, serverNumber int) error {
 	firewallRes, err := hetznerapi.GetFirewallRules(client, serverNumber)
 	if err != nil {
-		fmt.Printf("Error getting firewall rules: %v\n", err)
+		logrus.WithError(err).Error("Error getting firewall rules")
 		return err
 	}
-	fmt.Println("Firewall status:")
-	fmt.Printf("Server: %d, Status:%s\n", firewallRes.ServerNumber, firewallRes.Status)
+	logrus.Info("Firewall status:")
+	logrus.WithFields(logrus.Fields{
+		"Server": serverNumber,
+		"Status": firewallRes.Status,
+	}).Info("Firewall details")
 
-	fmt.Println("Firewall rules:")
+	logrus.Info("Firewall rules:")
 	for _, rule := range firewallRes.Rules {
-		fmt.Printf("SrcIP: %s, DstIP: %s, Protocol: %s, SrcPort: %s, DstPort: %s, Action: %s, TCPFlags: %s\n",
-			rule.SrcIP, rule.DstIP, rule.Protocol, rule.SrcPort, rule.DstPort, rule.Action, rule.TCPFlags)
+		logrus.WithFields(logrus.Fields{
+			"SrcIP":    rule.SrcIP,
+			"DstIP":    rule.DstIP,
+			"Protocol": rule.Protocol,
+			"SrcPort":  rule.SrcPort,
+			"DstPort":  rule.DstPort,
+			"Action":   rule.Action,
+			"TCPFlags": rule.TCPFlags,
+		}).Info("Firewall rule")
 	}
 	return nil
 }
