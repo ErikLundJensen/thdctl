@@ -12,6 +12,7 @@ import (
 var listFirewallRulesCmd = &cobra.Command{
 	Use:   "listFirewallRules <serverNumber>",
 	Short: "List all firewall rules for a server",
+	Args:  cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
 		serverNumber, err := strconv.Atoi(args[0])
 		if err != nil {
