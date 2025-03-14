@@ -68,6 +68,6 @@ func (c Client) MakeRequest(action, path string, values url.Values) ([]byte, *HT
 	logrus.WithFields(logrus.Fields{
 		"action": action,
 		"path":   path,
-	}).Infof("Response Body: %s", string(body))
+	}).Debugf("Response Body: %s", string(body))
 	return body, nil
 }

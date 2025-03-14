@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/sirupsen/logrus"
 )
 
 type RescueDetails struct {
@@ -55,7 +56,7 @@ func EnableRescueSystem(client robot.ClientInterface, serverNumber int) (*Rescue
 		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
-	fmt.Println("Parsed Response:", rescue)
-	fmt.Println("Rescue system enabled successfully.")
+	logrus.Debug("Parsed Response:", rescue)
+	logrus.Info("Rescue system enabled successfully.")
 	return &rescue, nil
 }
