@@ -17,15 +17,15 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 )
 
 // ServerParameters are the configurable fields of a server.
 type ServerParameters struct {
-	ServerNumber    int    `json:"serverNumber"`
-	Disk            string `json:"disk,omitempty"`
-	TalosVersion    string `json:"talosVersion,omitempty"`
-	TalosImage      string `json:"talosImage,omitempty"`
+	ServerNumber int    `json:"serverNumber"`
+	Disk         string `json:"disk,omitempty"`
+	TalosVersion string `json:"talosVersion,omitempty"`
+	TalosImage   string `json:"talosImage,omitempty"`
 }
 
 // ServerObservation are the observable fields of a server.
@@ -39,15 +39,14 @@ type TalosStatus struct {
 
 // A ServerStatus represents the observed state of a server.
 type ServerStatus struct {
-	Details             hetznerapi.ServerDetails     `json:"details,omitempty"`
-	Talos               TalosStatus       `json:"talos,omitempty"`
+	Details hetznerapi.ServerDetails `json:"details,omitempty"`
+	Talos   TalosStatus              `json:"talos,omitempty"`
 }
 
 // A ServerSpec defines the desired state of a server.
 type ServerSpec struct {
-	ForProvider       ServerParameters `json:"forProvider"`
+	ForProvider ServerParameters `json:"forProvider"`
 }
-
 
 type Server struct {
 	Spec   ServerSpec   `json:"spec"`
@@ -56,5 +55,5 @@ type Server struct {
 
 // ServerList contains a list of server
 type ServerList struct {
-	Items           []Server `json:"items"`
+	Items []Server `json:"items"`
 }

@@ -1,12 +1,13 @@
-package thdctrl
+package thdctl
 
 import (
 	"os"
+
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 	"github.com/spf13/cobra"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
 )
 
-var RobotClient = robot.Client {
+var RobotClient = robot.Client{
 	Username: os.Getenv("HETZNER_USERNAME"),
 	Password: os.Getenv("HETZNER_PASSWORD"),
 }
@@ -17,4 +18,3 @@ var Commands []*cobra.Command
 func addCommand(cmd *cobra.Command) {
 	Commands = append(Commands, cmd)
 }
-

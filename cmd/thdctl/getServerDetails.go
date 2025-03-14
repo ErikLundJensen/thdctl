@@ -1,11 +1,12 @@
-package thdctrl
+package thdctl
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 	"github.com/spf13/cobra"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
 )
 
 var getServerCmd = &cobra.Command{
@@ -37,6 +38,6 @@ func getServerDetails(client robot.Client, serverNumber int) error {
 
 	fmt.Printf("ID: %d, Name: %s, Product: %s, Datacenter: %s, IPv4: %s, IPv6: %s\n",
 		serverDetails.ServerNumber, serverDetails.ServerName, serverDetails.Product, serverDetails.Datacenter, serverDetails.ServerIP, serverDetails.ServerIPv6Net)
-	
+
 	return nil
 }

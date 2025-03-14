@@ -2,18 +2,19 @@ package main
 
 import (
 	"os"
-	"github.com/eriklundjensen/thdctrl/cmd/thdctrl"
+
+	"github.com/eriklundjensen/thdctl/cmd/thdctl"
 	"github.com/spf13/cobra"
 )
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "thdctrl",
+		Use:   "thdctl",
 		Short: "Talos Hetzner Dedicate Servers CLI",
 	}
 
-	for _, cmd := range thdctrl.Commands {
-			rootCmd.AddCommand(cmd)
+	for _, cmd := range thdctl.Commands {
+		rootCmd.AddCommand(cmd)
 	}
 
 	if err := rootCmd.Execute(); err != nil {

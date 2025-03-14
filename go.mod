@@ -1,4 +1,4 @@
-module github.com/eriklundjensen/thdctrl
+module github.com/eriklundjensen/thdctl
 
 go 1.22
 

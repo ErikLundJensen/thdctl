@@ -1,10 +1,10 @@
-package thdctrl
+package thdctl
 
 import (
 	"net/url"
 	"testing"
 
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -18,7 +18,7 @@ func (m *MockClient) Get(path string) ([]byte, *robot.HTTPError) {
 	if args.Get(1) == nil {
 		return args.Get(0).([]byte), nil
 	}
-	return args.Get(0).([]byte), &robot.HTTPError{ StatusCode: 0, Message: "", Err: args.Get(1).(error)}
+	return args.Get(0).([]byte), &robot.HTTPError{StatusCode: 0, Message: "", Err: args.Get(1).(error)}
 }
 
 func (m *MockClient) Post(path string, data url.Values) ([]byte, *robot.HTTPError) {
@@ -26,7 +26,7 @@ func (m *MockClient) Post(path string, data url.Values) ([]byte, *robot.HTTPErro
 	if args.Get(1) == nil {
 		return args.Get(0).([]byte), nil
 	}
-	return args.Get(0).([]byte), &robot.HTTPError{ StatusCode: 0, Message: "", Err: args.Get(1).(error)}
+	return args.Get(0).([]byte), &robot.HTTPError{StatusCode: 0, Message: "", Err: args.Get(1).(error)}
 }
 
 // Mocking the SSHClientInterface

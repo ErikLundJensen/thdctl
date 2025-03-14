@@ -1,10 +1,11 @@
-package thdctrl
+package thdctl
 
 import (
 	"fmt"
+
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 	"github.com/spf13/cobra"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
 )
 
 var listServersCmd = &cobra.Command{

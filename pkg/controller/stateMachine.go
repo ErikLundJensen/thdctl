@@ -5,20 +5,20 @@ import (
 	"os"
 	"time"
 
-	v1alpha1 "github.com/eriklundjensen/thdctrl/pkg/api/server/v1alpha"
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	v1alpha1 "github.com/eriklundjensen/thdctl/pkg/api/server/v1alpha"
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 )
 
 // StateMachine represents the state machine for server states
 type StateMachine struct {
-	client     robot.ClientInterface
-	sshClient  hetznerapi.SSHClientInterface
-	server     *v1alpha1.ServerParameters
-	state      ServerStatus
-	retries    int
-	maxRetries int
-	lastSSHPassword	string
+	client          robot.ClientInterface
+	sshClient       hetznerapi.SSHClientInterface
+	server          *v1alpha1.ServerParameters
+	state           ServerStatus
+	retries         int
+	maxRetries      int
+	lastSSHPassword string
 }
 
 // NewStateMachine creates a new StateMachine instance
@@ -33,9 +33,9 @@ func NewStateMachine(client robot.ClientInterface, sshClient hetznerapi.SSHClien
 }
 
 func (sm *StateMachine) StateChange(state ServerStatus) {
-	if (sm.state == state) {
+	if sm.state == state {
 		return
-	}	
+	}
 	fmt.Printf("State change from: %s to %s\n", sm.state, state)
 	sm.state = state
 }
@@ -145,7 +145,7 @@ func (sm *StateMachine) checkSSH() ServerStatus {
 	if err := sm.sshClient.EstablishSSHSession(); err == nil {
 		sm.retries = 0
 		return SSHAvailable
-	}else{
+	} else {
 		fmt.Printf("SSH not available: %v\n", err)
 	}
 	// Reboot if SSH is not available after several retries

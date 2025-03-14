@@ -1,6 +1,6 @@
 # Variables
-BINARY_NAME=thdctrl
-DOCKER_IMAGE=thdctrl:latest
+BINARY_NAME=thdctl
+DOCKER_IMAGE=thdctl:latest
 
 # Build the Go executable
 build:

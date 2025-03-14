@@ -1,13 +1,13 @@
-package thdctrl
+package thdctl
 
 import (
 	"fmt"
 	"os"
 	"strconv"
 
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
-	"github.com/eriklundjensen/thdctrl/pkg/validation"
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/validation"
 	"github.com/spf13/cobra"
 )
 

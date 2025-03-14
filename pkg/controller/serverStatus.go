@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
-	v1alpha1 "github.com/eriklundjensen/thdctrl/pkg/api/server/v1alpha"
+	v1alpha1 "github.com/eriklundjensen/thdctl/pkg/api/server/v1alpha"
 
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 )
 
 // ServerStatus represents the current state of a server

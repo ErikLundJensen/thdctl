@@ -1,17 +1,17 @@
-# Talos Hetzner Dedicated Control CLI - thdctrl
+# Talos Hetzner Dedicated Control CLI - thdctl
 
 ## Overview
 
-`thdctrl` is a command-line tool to manage Hetzner dedicated servers with Talos. It provides various commands to initialize, configure, and manage your servers.
+`thdctl` is a command-line tool to manage Hetzner dedicated servers with Talos. It provides various commands to initialize, configure, and manage your servers.
 
 ## Docker based
 
-To build and run`thdctrl` use the provided Dockerfile:
+To build and run`thdctl` use the provided Dockerfile:
 
 ```sh
 make docker-build
 
-docker run --rm -v $(pwd):/root thdctrl:latest /app/thdctrl --help
+docker run --rm -v $(pwd):/root thdctl:latest /app/thdctl --help
 ```
 
 ## Build and run without Docker
@@ -22,7 +22,7 @@ make build
 
 ## Usage
 
-Use `thdctrl --help` to get a list of available commands and arguments.  
+Use `thdctl --help` to get a list of available commands and arguments.  
 Username and password for the Hetzner Robot API must be set using environment variables:
 ```
 export HETZNER_USERNAME='myAPIuser'
@@ -46,13 +46,13 @@ The later command is intended for a crossplane provider, however, it can be used
 Initialize Hetzner dedicated server by using a Hetzner server number.
 
 ```sh
-thdctrl init <serverNumber>
+thdctl init <serverNumber>
 ```
 
 Example:
 
 ```sh
-thdctrl init 123456
+thdctl init 123456
 ```
 
 ### `reconsile`
@@ -60,14 +60,14 @@ thdctrl init 123456
 Example using the reconcile command: 
 
 ```sh
-thdctrl reconcile -f talos/serverSpec.yaml
+thdctl reconcile -f talos/serverSpec.yaml
 ```
 
 
 ### Flags & Defaults
 
-- `--help`: Show help information for `thdctrl` commands.
-- `--version`: Show the version of `thdctrl`.
+- `--help`: Show help information for `thdctl` commands.
+- `--version`: Show the version of `thdctl`.
 
 The environment variable "HETZNET_SSH_PASSWORD" can be used if Hetzner Rescue API no longer returns the password. For example, when activating the rescue mode then the password is only available until the server reboots.
 
@@ -77,7 +77,7 @@ The environment variable "HETZNET_SSH_PASSWORD" can be used if Hetzner Rescue AP
 1. Initialize the server:
 
     ```sh
-    thdctrl init 123456
+    thdctl init 123456
     ```
 
 The remaning steps is regular Talos initialization. Below is just an overall description.  

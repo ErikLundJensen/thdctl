@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 )
 
 type RescueDetails struct {
@@ -33,7 +33,7 @@ func GetRescueSystemDetails(client robot.ClientInterface, serverNumber int) (*Re
 
 	var rescue Rescue
 	if err := json.Unmarshal(body, &rescue); err != nil {
-		return nil, &robot.HTTPError{ StatusCode: 0, Message: "failed to unmarshal response", Err: err }
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
 	return &rescue, nil
@@ -52,7 +52,7 @@ func EnableRescueSystem(client robot.ClientInterface, serverNumber int) (*Rescue
 
 	var rescue Rescue
 	if err := json.Unmarshal(body, &rescue); err != nil {
-		return nil, &robot.HTTPError{ StatusCode: 0, Message: "failed to unmarshal response", Err: err }
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
 	fmt.Println("Parsed Response:", rescue)

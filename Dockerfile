@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o thdctrl .
+RUN CGO_ENABLED=0 GOOS=linux go build -o thdctl .
 
 # Second stage: Run the built executable
 FROM alpine:latest
@@ -24,10 +24,10 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app/
 
 # Copy the built executable from the builder stage
-COPY --from=builder /app/thdctrl .
+COPY --from=builder /app/thdctl .
 
 # Make the binary executable
-RUN chmod +x /app/thdctrl
+RUN chmod +x /app/thdctl
 
 # Command to run the executable
-CMD ["./thdctrl"]
+CMD ["./thdctl"]

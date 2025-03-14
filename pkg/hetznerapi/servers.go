@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 )
 
 type Subnet struct {
@@ -47,12 +47,11 @@ func GetServerDetails(client robot.ClientInterface, serverNumber int) (*ServerDe
 
 	var serverDetails ServerDetails
 	if err := json.Unmarshal(body, &serverDetails); err != nil {
-		return nil,  &robot.HTTPError{ StatusCode: 0, Message: "failed to unmarshal response", Err: err }
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
 	return &serverDetails, nil
 }
-
 
 func ListServers(client robot.ClientInterface) ([]Server, *robot.HTTPError) {
 	path := "server"
@@ -64,7 +63,7 @@ func ListServers(client robot.ClientInterface) ([]Server, *robot.HTTPError) {
 
 	var servers []Server
 	if err := json.Unmarshal(body, &servers); err != nil {
-		return nil, &robot.HTTPError{ StatusCode: 0, Message: "failed to unmarshal response", Err: err }
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
 	return servers, nil

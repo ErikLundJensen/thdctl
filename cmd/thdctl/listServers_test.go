@@ -1,12 +1,12 @@
-package thdctrl
+package thdctl
 
 import (
 	"errors"
 	"net/url"
 	"testing"
 
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +32,7 @@ func (m *mockRobotClient) Get(path string) ([]byte, *robot.HTTPError) {
 
 func (m *mockRobotClient) Post(path string, values url.Values) ([]byte, *robot.HTTPError) {
 	if m.shouldFail {
-		return nil, &robot.HTTPError{ StatusCode: 0, Message: "", Err: errors.New("failed to reboot server")}
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "", Err: errors.New("failed to reboot server")}
 	}
 	response := `{"status": "success"}`
 	return []byte(response), nil

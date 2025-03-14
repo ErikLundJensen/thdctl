@@ -1,13 +1,13 @@
-package thdctrl
+package thdctl
 
 import (
 	"fmt"
 	"os"
 
-	v1alpha1 "github.com/eriklundjensen/thdctrl/pkg/api/server/v1alpha"
-	"github.com/eriklundjensen/thdctrl/pkg/controller"
-	"github.com/eriklundjensen/thdctrl/pkg/hetznerapi"
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	v1alpha1 "github.com/eriklundjensen/thdctl/pkg/api/server/v1alpha"
+	"github.com/eriklundjensen/thdctl/pkg/controller"
+	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
@@ -46,7 +46,7 @@ func readServerConfig(filename string) (*v1alpha1.ServerParameters, error) {
 	if err := yaml.Unmarshal(data, &server); err != nil {
 		return nil, fmt.Errorf("error parsing yaml: %v", err)
 	}
-	
+
 	if server.TalosImage == "" && server.TalosVersion == "" {
 		return nil, fmt.Errorf("TalosImage or TalosVersion must be set")
 	}

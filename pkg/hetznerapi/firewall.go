@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/eriklundjensen/thdctrl/pkg/robot"
+	"github.com/eriklundjensen/thdctl/pkg/robot"
 )
 
 type FirewallRule struct {
@@ -47,7 +47,7 @@ func GetFirewallRules(client robot.ClientInterface, serverNumber int) (*Firewall
 
 	var firewall FirewallSet
 	if err := json.Unmarshal(body, &firewall); err != nil {
-		return nil, &robot.HTTPError{ StatusCode: 0, Message: "failed to unmarshal response", Err: err }
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
 	return &firewall, nil
@@ -63,7 +63,7 @@ func GetFirewallTemplates(client robot.ClientInterface) ([]FirewallTemplate, *ro
 
 	var templates []FirewallTemplate
 	if err := json.Unmarshal(body, &templates); err != nil {
-		return nil, &robot.HTTPError{ StatusCode: 0, Message: "failed to unmarshal response", Err: err }
+		return nil, &robot.HTTPError{StatusCode: 0, Message: "failed to unmarshal response", Err: err}
 	}
 
 	return templates, nil
