@@ -1,10 +1,9 @@
 package thdctl
 
 import (
-	"fmt"
-
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -24,14 +23,20 @@ func init() {
 func listServers(client robot.Client) error {
 	servers, err := hetznerapi.ListServers(client)
 	if err != nil {
-		fmt.Printf("Error listing servers: %v\n", err)
+		logrus.WithError(err).Error("Error listing servers")
 		return err
 	}
-	fmt.Println("List of servers:")
+	logrus.Info("List of servers:")
 	for _, server := range servers {
 		serverDetails := server.Server
-		fmt.Printf("ID: %d, Name: %s, Product: %s, Datacenter: %s, IPv4: %s, IPv6: %s\n",
-			serverDetails.ServerNumber, serverDetails.ServerName, serverDetails.Product, serverDetails.Datacenter, serverDetails.ServerIP, serverDetails.ServerIPv6Net)
+		logrus.WithFields(logrus.Fields{
+			"ID":         serverDetails.ServerNumber,
+			"Name":       serverDetails.ServerName,
+			"Product":    serverDetails.Product,
+			"Datacenter": serverDetails.Datacenter,
+			"IPv4":       serverDetails.ServerIP,
+			"IPv6":       serverDetails.ServerIPv6Net,
+		}).Info("Server details")
 	}
 	return nil
 }

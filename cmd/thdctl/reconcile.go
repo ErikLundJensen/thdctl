@@ -9,6 +9,7 @@ import (
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
 	yaml "github.com/goccy/go-yaml"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -60,7 +61,7 @@ func reconcileFromFile(client robot.ClientInterface, sshClient *hetznerapi.SSHCl
 		return err
 	}
 
-	fmt.Printf("Read configuration for server %d\n", server.ServerNumber)
+	logrus.Infof("Read configuration for server %d", server.ServerNumber)
 
 	sm := controller.NewStateMachine(client, sshClient, server, 5)
 	if initialState != "" {

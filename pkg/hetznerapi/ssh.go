@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -17,7 +18,7 @@ type SSHClientInterface interface {
 	InstallImage(disk string) (string, error)
 	ListDisks() (string, error)
 	WaitForReboot() bool
-	SetTargetHost(host, port string)	
+	SetTargetHost(host, port string)
 }
 
 type SSHClient struct {
@@ -94,13 +95,21 @@ func (client *SSHClient) WaitForReboot() bool {
 	retryInterval := 10 * time.Second
 
 	for i := 0; i < maxRetries; i++ {
-		fmt.Printf("Attempt %d: Establishing SSH session to %s:%s\n", i+1, client.Host, client.Port)
+		logrus.WithFields(logrus.Fields{
+			"attempt": i + 1,
+			"host":    client.Host,
+			"port":    client.Port,
+		}).Info("Establishing SSH session")
 
 		err := client.EstablishSSHSession()
 		if err != nil {
-			fmt.Printf("Error establishing SSH session: %v\n", err)
+			logrus.WithFields(logrus.Fields{
+				"attempt": i + 1,
+				"host":    client.Host,
+				"port":    client.Port,
+			}).Errorf("Error establishing SSH session: %v", err)
 			if i < maxRetries-1 {
-				fmt.Printf("Retrying in %s...\n", retryInterval)
+				logrus.Infof("Retrying in %s...", retryInterval)
 				time.Sleep(retryInterval)
 				continue
 			}

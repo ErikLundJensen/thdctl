@@ -1,11 +1,11 @@
 package thdctl
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +16,7 @@ var getServerCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		serverNumber, err := strconv.Atoi(args[0])
 		if err != nil {
-			fmt.Printf("Error parsing server number: %v\n", err)
+			logrus.WithError(err).Error("Error parsing server number")
 			return err
 		}
 
@@ -32,12 +32,21 @@ func init() {
 func getServerDetails(client robot.Client, serverNumber int) error {
 	serverDetails, err := hetznerapi.GetServerDetails(client, serverNumber)
 	if err != nil {
-		fmt.Printf("Error getting server details: %v\n", err.Message)
+		logrus.WithFields(logrus.Fields{
+			"error": err.Err,
+			"msg":   err.Message,
+		}).Error("Error getting server details")
 		return err.Err
 	}
 
-	fmt.Printf("ID: %d, Name: %s, Product: %s, Datacenter: %s, IPv4: %s, IPv6: %s\n",
-		serverDetails.ServerNumber, serverDetails.ServerName, serverDetails.Product, serverDetails.Datacenter, serverDetails.ServerIP, serverDetails.ServerIPv6Net)
+	logrus.WithFields(logrus.Fields{
+		"ID":         serverDetails.ServerNumber,
+		"Name":       serverDetails.ServerName,
+		"Product":    serverDetails.Product,
+		"Datacenter": serverDetails.Datacenter,
+		"IPv4":       serverDetails.ServerIP,
+		"IPv6":       serverDetails.ServerIPv6Net,
+	}).Info("Server details")
 
 	return nil
 }

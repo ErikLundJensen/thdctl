@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/eriklundjensen/thdctl/pkg/robot"
+	"github.com/sirupsen/logrus"
 )
 
 type Subnet struct {
@@ -79,6 +80,6 @@ func RebootServer(client robot.ClientInterface, serverNumber int) *robot.HTTPErr
 	if err != nil {
 		return err
 	}
-	fmt.Println("Server reboot successfully initiated")
+	logrus.Info("Server reboot successfully initiated")
 	return nil
 }

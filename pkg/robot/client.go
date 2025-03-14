@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 var HETZNER_SERVER_URL = "https://robot-ws.your-server.de"
@@ -42,7 +44,7 @@ func (c Client) MakeRequest(action, path string, values url.Values) ([]byte, *HT
 
 	req, err := http.NewRequest(action, url, parameters)
 	if err != nil {
-		return nil, &HTTPError{ 0, "failed to create request", err}
+		return nil, &HTTPError{0, "failed to create request", err}
 	}
 	req.SetBasicAuth(c.Username, c.Password)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -50,19 +52,22 @@ func (c Client) MakeRequest(action, path string, values url.Values) ([]byte, *HT
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, &HTTPError{ 0, "failed to send request", err}
+		return nil, &HTTPError{0, "failed to send request", err}
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, &HTTPError{ resp.StatusCode, fmt.Sprintf("%v", resp.Status), nil}
+		return nil, &HTTPError{resp.StatusCode, fmt.Sprintf("%v", resp.Status), nil}
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, &HTTPError{ 0, "failed to read response body", err}
+		return nil, &HTTPError{0, "failed to read response body", err}
 	}
 
-	fmt.Println("Response Body:", string(body))
+	logrus.WithFields(logrus.Fields{
+		"action": action,
+		"path":   path,
+	}).Debugf("Response Body: %s", string(body))
 	return body, nil
 }

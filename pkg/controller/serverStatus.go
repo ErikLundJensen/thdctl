@@ -7,6 +7,7 @@ import (
 	"time"
 
 	v1alpha1 "github.com/eriklundjensen/thdctl/pkg/api/server/v1alpha"
+	"github.com/sirupsen/logrus"
 
 	"github.com/eriklundjensen/thdctl/pkg/hetznerapi"
 	"github.com/eriklundjensen/thdctl/pkg/robot"
@@ -79,13 +80,13 @@ func DetermineServerStatus(client robot.ClientInterface, sshClient hetznerapi.SS
 		if err.StatusCode == 404 {
 			return ServerNotFound
 		}
-		fmt.Printf("Error getting rescue system status: %v\n", err)
+		logrus.WithError(err).Error("Error getting rescue system status")
 		return RobotAPIUnavailable
 	}
 
 	host := rescue.Rescue.ServerIP
 	if rescue.Rescue.Active {
-		fmt.Println("Rescue system active")
+		logrus.Info("Rescue system active")
 
 		return RescueModeInitiated
 	}
@@ -108,7 +109,7 @@ func DetermineServerStatus(client robot.ClientInterface, sshClient hetznerapi.SS
 		return TalosAPIAvailable
 	}
 	if talosError != nil {
-		fmt.Printf("Talos API not available: %v\n", talosError)
+		logrus.WithError(talosError).Warn("Talos API not available")
 	}
 	// Or waiting for Talos API to become available
 	// We don't have access to the boot log (require KVM console and a human request towards Hetzner)
