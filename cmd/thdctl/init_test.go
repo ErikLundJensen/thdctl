@@ -85,7 +85,7 @@ func TestInitializeServer(t *testing.T) {
 		skipReboot:         false,
 		enableRescueSystem: true,
 		disk:               "nvme0n1",
-		version:            "1.9.2",
+		version:            "v1.9.2",
 		image:              "",
 	}
 

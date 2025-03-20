@@ -3,7 +3,7 @@ helm template                                                   \
     cilium/cilium                                               \
     --kube-version 1.32.3                                       \
     -f cilium-values.yaml                                       \
-    --version 1.16.3                                            \
+    --version 1.17.2                                            \
     --namespace kube-system                                     \
     --set ipam.mode=kubernetes                                  \
     --set kubeProxyReplacement=true                             \
