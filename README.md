@@ -61,6 +61,13 @@ Example:
 thdctl init 123456
 ```
 
+By default the disk /dev/sda is used for installation. Use the `--disk` option to specify another disk. 
+```sh
+thdctl init 123456 --disk nvme0n1
+```
+The available disks are listed if the given disk is not found. Thereby it should be easier to select the correct disk in the second attempt. 
+
+
 #### `reconcile`
 
 Example using the reconcile command: 
