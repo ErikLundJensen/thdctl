@@ -1,0 +1,31 @@
+name: Build thdctl
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.17'
+
+    - name: Build thdctl
+      run: go build -o thdctl .
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: thdctl
+        path: thdctl
