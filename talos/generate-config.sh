@@ -5,6 +5,8 @@ set -e
 # TODO: change node name and output file name
 # TODO: error handling...
 
+mkdir -p gen
+
 # TODO: Only during bootstrapping of cluster:
 talosctl gen secrets --output-file gen/secrets.yaml
 talosctl gen config --with-secrets gen/secrets.yaml --output-types talosconfig -o gen/talosconfig ${CLUSTER_NAME} https://${KUBERNETES_API_SERVER_ADDRESS}:${KUBERNETES_API_SERVER_PORT}

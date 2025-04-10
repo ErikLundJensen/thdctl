@@ -3,3 +3,4 @@ talos/gen/*
 .vscode/launch.json
 talos/hetzner-secrets.yaml
 talos/init-env-private.sh
+talos/demo/
