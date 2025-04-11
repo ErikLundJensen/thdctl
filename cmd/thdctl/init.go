@@ -44,7 +44,7 @@ var initCmd = &cobra.Command{
 func init() {
 	initCmd.Flags().BoolVarP(&initCmdFlags.skipReboot, "skipReboot", "n", false, "skip reboot of server after enabling rescue system.")
 	initCmd.Flags().BoolVarP(&initCmdFlags.enableRescueSystem, "enable-rescue-system", "r", false, "entering rescue system even if rescue system already enabled. This will generate a new password.")
-	initCmd.Flags().StringVarP(&initCmdFlags.disk, "disk", "d", "nvme0n1", "disk to use for installation of image.")
+	initCmd.Flags().StringVarP(&initCmdFlags.disk, "disk", "d", "sda", "disk to use for installation of image.")
 	initCmd.Flags().StringVarP(&initCmdFlags.version, "version", "v", defaultTalosVersion, "Talos version.")
 	initCmd.Flags().StringVarP(&initCmdFlags.image, "image", "i", "", "Talos image URL. Don't use hcloud-amd64 image target Hetzner Cloud, use Talos 'metal' image instead.")
 	initCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
@@ -58,6 +58,11 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 
 	rescue, err := hetznerapi.GetRescueSystemDetails(client, serverNumber)
 	if err != nil {
+		if err.StatusCode == 401 {
+			logrus.WithFields(logrus.Fields{
+				"username": client.(robot.Client).Username,
+			}).Warn("Failed to authenticate with Hetzner API. Please check your credentials.")
+		}
 		logrus.WithError(err).Error("Error getting rescue system status")
 		return err
 	}
@@ -88,6 +93,23 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 	sshClient.WaitForReboot()
 	logrus.Info("Server rebooted in rescue system mode")
 
+	output, sshErr := sshClient.VerifyDiskExists(f.disk)
+	if sshErr != nil {
+		logrus.WithFields(logrus.Fields{
+			"error":  sshErr,
+			"output": output,
+		}).Error("Disk not found")
+		listOutput, listDiskErr := sshClient.ListDisks()
+		if listDiskErr != nil {
+			logrus.WithError(listDiskErr).Error("Failed to list disks")
+		} else {
+			disks, _ := hetznerapi.ParseLSBLKOutput(listOutput)
+			logrus.Info("Available disks")
+			hetznerapi.LogAsJSON(disks)
+		}
+		return sshErr
+	}
+
 	version := defaultTalosVersion
 	if f.version != "" {
 		if f.image != "" {
@@ -100,7 +122,7 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 		imageUrl = f.image
 	}
 
-	output, sshErr := sshClient.DownloadImage(imageUrl)
+	output, sshErr = sshClient.DownloadImage(imageUrl)
 	if sshErr != nil {
 		logrus.WithFields(logrus.Fields{
 			"error":  sshErr,
@@ -115,7 +137,7 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 			"error":  sshErr,
 			"output": output,
 		}).Error("Failed to install image")
-		_, sshErr = sshClient.ListDisks()
+		_, _ = sshClient.ListDisks()
 		return sshErr
 	}
 

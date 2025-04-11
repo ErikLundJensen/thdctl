@@ -1,5 +1,7 @@
 github.copilot.enable": {
     "*": true,
     "*-secrets.yaml": false,
+    ".vscode/launch.json": false,
+    "talos/demo/*": false,
     "talos/gen/*": false,
 }

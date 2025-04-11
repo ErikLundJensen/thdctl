@@ -1,6 +1,6 @@
 talos/gen/*
 /thdctl
-.vscode/launch.json
+.vscode/*
 talos/hetzner-secrets.yaml
 talos/init-env-private.sh
 talos/demo/

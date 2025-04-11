@@ -84,7 +84,7 @@ func TestInitializeServer(t *testing.T) {
 	flags := cmdFlags{
 		skipReboot:         false,
 		enableRescueSystem: true,
-		disk:               "nvme0n1",
+		disk:               "sda1",
 		version:            "v1.9.2",
 		image:              "",
 	}

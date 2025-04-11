@@ -14,6 +14,8 @@ type SSHClientInterface interface {
 	EstablishSSHSession() error
 	ExecuteCommand(command string) (string, error)
 	ExecuteLSCommand() (string, error)
+
+	VerifyDiskExists(disk string) (string, error)
 	DownloadImage(url string) (string, error)
 	InstallImage(disk string) (string, error)
 	ListDisks() (string, error)
@@ -58,8 +60,9 @@ func (client *SSHClient) ExecuteCommand(command string) (string, error) {
 	if client.Session == nil {
 		return "", fmt.Errorf("session is not established")
 	}
-	client.Session.Stdout = &b
+
 	client.EstablishSSHSession()
+	client.Session.Stdout = &b
 	defer client.Session.Close()
 
 	if err := client.Session.Run(command); err != nil {

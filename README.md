@@ -61,7 +61,9 @@ Example:
 thdctl init 123456
 ```
 
-By default the disk /dev/nvme0n1 is used for installation. Use the `--disk` option to specify another disk. 
+By default the disk /dev/sda is used for installation. Use the `--disk` option to specify another disk. 
+(Previous version defaulted to a nvme disk, however, nvme disk are often used for user data and the slower SATA disk used for OS)
+
 ```sh
 thdctl init 123456 --disk sda
 ```

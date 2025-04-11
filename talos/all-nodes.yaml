@@ -1,6 +1,6 @@
 machine:
   install:
-    disk: /dev/nvme0n1
+    disk: /dev/sda1
     image: ghcr.io/siderolabs/installer:v1.9.2
     #diskSelector:
     #  busPath: /pci0000:00/0000:00:17.0/ata1/host0/target0:0:0/0:0:0:0 # Disk bus path.
