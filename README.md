@@ -163,3 +163,8 @@ The remaning steps are regular Talos initialization.
     kubectl get pods -A
     ```
 
+# Development
+
+This project has been developed using GenAI to test the GitHub Copilot Chat in VS Code (released 2025-Feb).
+Some commits reflect this, e.g. the GitHub build.yaml was purely generated using GitHub Copilot.
+
