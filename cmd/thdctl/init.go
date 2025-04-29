@@ -42,7 +42,7 @@ var initCmd = &cobra.Command{
 
 // TODO: validate disk parameter does not include special characters (prevent injection of commands in shell)
 func init() {
-	initCmd.Flags().BoolVarP(&initCmdFlags.skipReboot, "skipReboot", "n", false, "skip reboot of server after enabling rescue system.")
+	initCmd.Flags().BoolVarP(&initCmdFlags.skipReboot, "skipReboot", "n", false, "skip reboot of server to enable rescue system. HETZNER_SSH_PASSWORD must be set in environment variable when skipReet")
 	initCmd.Flags().BoolVarP(&initCmdFlags.enableRescueSystem, "enable-rescue-system", "r", false, "entering rescue system even if rescue system already enabled. This will generate a new password.")
 	initCmd.Flags().StringVarP(&initCmdFlags.disk, "disk", "d", "sda", "disk to use for installation of image.")
 	initCmd.Flags().StringVarP(&initCmdFlags.version, "version", "v", defaultTalosVersion, "Talos version.")
@@ -54,7 +54,16 @@ func init() {
 }
 
 func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClientInterface, serverNumber int, f cmdFlags) error {
-	sshPassword := os.Getenv("HETZNER_SSH_PASSWORD") // Set your Hetzner password in environment variable
+	sshPassword := ""
+	if f.skipReboot { 
+		if (f.enableRescueSystem){
+			return fmt.Errorf("can not enable rescue system and skip reboot at the same time")
+		}
+		sshPassword = os.Getenv("HETZNER_SSH_PASSWORD") // Set your Hetzner password in environment variable instead of initiating rescue system
+		if (sshPassword	== "") {
+			return fmt.Errorf("can not skip reboot without setting HETZNER_SSH_PASSWORD")
+		}
+	}
 
 	rescue, err := hetznerapi.GetRescueSystemDetails(client, serverNumber)
 	if err != nil {
@@ -67,7 +76,7 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 		return err
 	}
 
-	if !rescue.Rescue.Active || f.enableRescueSystem {
+	if (!rescue.Rescue.Active && sshPassword =="") || f.enableRescueSystem {
 		rescue, err = hetznerapi.EnableRescueSystem(client, serverNumber)
 		if err != nil {
 			logrus.WithError(err).Error("Error enabling rescue system")
@@ -75,7 +84,7 @@ func initializeServer(client robot.ClientInterface, sshClient hetznerapi.SSHClie
 		}
 	}
 
-	if !f.skipReboot {
+	if !f.skipReboot || sshPassword == ""{
 		err = hetznerapi.RebootServer(client, serverNumber)
 	}
 	if err != nil || rescue == nil {
